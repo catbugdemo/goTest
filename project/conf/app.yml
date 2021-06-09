@@ -1,0 +1,19 @@
+
+redis:
+  host: 127.0.0.1:6379
+  passwrod:
+  timeout: 200
+#  最大活动连接数
+  max_active: 30
+#  最大闲置连接
+  max_idle: 30
+
+postgre:
+  type: postgres
+  user: postgres
+  password: a8616436
+  host: 118.89.121.211
+  #名称
+  name: game_test
+  #前缀
+  table_prefix: tb_

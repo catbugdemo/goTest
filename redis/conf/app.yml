@@ -1,9 +1,0 @@
-
-redis:
-  host: 127.0.0.1:6379
-  passwrod:
-  timeout: 200
-#  最大活动连接数
-  maxactive: 30
-#  最大闲置连接
-  maxidle: 30
