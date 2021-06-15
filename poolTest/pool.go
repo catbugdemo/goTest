@@ -33,7 +33,7 @@ type Pool struct {
 	chTask chan *Task
 	//锁
 	mu     sync.Mutex
-	//
+	//用于等待一组线程的结束
 	wg     sync.WaitGroup
 }
 
@@ -63,8 +63,8 @@ func (p *Pool) Put(task *Task) error {
 
 	//放入消息队列中
 	p.chTask <- task
-	p.wg.Add(1)
 
+	p.wg.Add(1)
 	//运行线程
 	if p.active < p.MaxCap {
 		p.run()
@@ -83,7 +83,6 @@ func (p *Pool) worker() {
 	defer func() {
 		p.active--
 		p.wg.Done()
-		<-p.chTask
 	}()
 
 	for {

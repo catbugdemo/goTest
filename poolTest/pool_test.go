@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestPool(t *testing.T) {
+func TestExample(t *testing.T) {
 	t.Run("pool", func(t *testing.T) {
 		pool, err := NewPool(20)
 		assert.Nil(t, err)
