@@ -1,35 +1,42 @@
 package main
 
-
 import (
-"bytes"
-"encoding/json"
-"log"
-"os"
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+	"sync"
 )
 
+//使用一个计数器(应该是？)
+var group = sync.WaitGroup{}
+
 func main() {
+	//当需要开启一个线程时，设定等待的线程+1
+	group.Add(1)
+	go UserInput()
 
-	type Road struct {
-		Name   string
-		Number int
+	//等待全部线程结束
+	group.Wait()
+	os.Exit(0)
+}
+
+func UserInput() {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("输入指令：")
+		text, _ := reader.ReadString('\n')
+		text = strings.Replace(text, "\n", "", -1)
+		switch text {
+		case "exit":
+			{ // 退出本程序
+				fmt.Print("程序退出\n")
+				//线程数-1
+				group.Done()
+				return
+			}
+		default:
+			fmt.Println("不可识别的指令")
+		}
 	}
-	roads := []Road{
-		{"Diamond Fork", 29},
-		{"Sheep Creek", 51},
-	}
-
-	b, err := json.Marshal(roads)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	var out bytes.Buffer
-	err = json.Indent(&out, b, "", "\t")
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	out.WriteTo(os.Stdout)
 }

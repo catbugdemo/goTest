@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:处理新装扮;
+:跟之前的处理流程一样;
+:新的判断处理;
+if (从背包中判断该道具是否是永久道具) then (是永久道具)
+    :不进行处理;
+else (不是永久道具)
+    if (判断背包中的道具是否过期) then (过期)
+        :更新背包中道具的\n过期时间\n是否过期\n道具唯一hash？;
+    else (未过期)
+        :更新背包中道具的\n过期时间;
+    endif
+endif
+:返回操作成功;
+stop
+
+@enduml

@@ -1,8 +1,10 @@
 package test
 
 import (
+	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+	"time"
 )
 
 func TestFibonacci(t *testing.T) {
@@ -25,4 +27,11 @@ func Fibonacci(num int) int {
 		n2 = sum
 	}
 	return n2
+}
+
+func TestUnix(t *testing.T) {
+	t.Run("unix", func(t *testing.T) {
+		i := time.Now().Unix() % 30
+		fmt.Println(i)
+	})
 }
