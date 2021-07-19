@@ -26,12 +26,25 @@ func TestFmt(t *testing.T) {
 		fmt.Println()
 
 		// %T	值的类型的Go语法表示
-		fmt.Printf("%T", ints)  // test.Test
+		fmt.Printf("%T", ints) // test.Test
 		fmt.Println()
 
 		// %% 百分号
-		fmt.Printf("%%")  // %
-
+		fmt.Printf("%%") // %
 
 	})
+}
+
+func TestMake(t *testing.T) {
+	t.Run("not make", func(t *testing.T) {
+		ints := make([][]int, 2, 10)
+		i := append(ints, []int{1, 2})
+		fmt.Println(i)
+	})
+}
+
+
+// 格式化输出json ()
+func formatJSON()  {
+
 }

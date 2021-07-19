@@ -104,5 +104,4 @@ func (p *Pool) Close() {
 	p.status = STOPED
 	close(p.chTask)
 	p.wg.Wait()
-
 }

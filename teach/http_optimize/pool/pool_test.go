@@ -1,4 +1,4 @@
-package poolTest
+package pool
 
 import (
 	"fmt"
@@ -6,20 +6,19 @@ import (
 	"testing"
 )
 
-func TestExample(t *testing.T) {
+func TestPool(t *testing.T) {
 	t.Run("pool", func(t *testing.T) {
-		pool, err := NewPool(20)
-		assert.Nil(t, err)
+		pool, e := NewPool(20)
+		assert.Nil(t, e)
 		defer pool.Close()
-		
+
 		for i := 0; i < 20; i++ {
 			pool.Put(&Task{
-				Handler: func(v ...interface{}) {
+				Handle: func(v ...interface{}) {
 					fmt.Println(v)
 				},
 				Params: []interface{}{i},
 			})
 		}
-
 	})
 }

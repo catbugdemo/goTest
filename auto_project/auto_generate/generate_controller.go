@@ -9,26 +9,22 @@ import (
 // ${handler_name} --- 模块名称
 // ${handler_service} --- service层模块名
 // ${handler_error} --- 自定义异常抛出类型类型
-func GenerateController(hasParam bool, replacement ...map[string]string) string {
-	if len(replacement) == 0 {
-		replacement = []map[string]string{
-			map[string]string{},
-		}
-	}
-	handleDefaultController(replacement[0])
+func GenerateController(replacement map[string]interface{}) string {
+	handleDefaultController(replacement)
 
 	var fro_control_mould = `
 // Auto Generate controller
 
 //${handler_name}
-func ${handler_name}(c *gin.Context) { 
+func ${handler_name}(c *gin.Context) {
+`
+	var has_authMiddleware = `
 	//获取用户数据
 	pl, e := authMiddleware.GetClientPayload(c)
 	if e != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"tip_id": 1, "tip": "token参数异常，请稍后重试", "debug_message": errorx.Wrap(e).Error()})
 		return
-	}
-`
+	}`
 	var cen_control_mould = `
 	//根据前端是否传入数据来确定是否删除
 	type Param struct {
@@ -62,21 +58,25 @@ func ${handler_name}(c *gin.Context) {
 	c.JSON(http.StatusOK,gin.H{"tip_id":0,"tip":"success","data":data})
 }
 `
-	var control_mould string
-	if hasParam {
-		control_mould = fro_control_mould + cen_control_mould + aft_control_mould
-	} else {
-		control_mould = fro_control_mould + aft_control_mould
+	var result = fro_control_mould
+	if replacement["has_authMiddleware"].(bool) {
+		result += has_authMiddleware
 	}
 
-	result := strings.Replace(control_mould, "${handler_name}", replacement[0]["${handler_name}"], -1)
-	result = strings.Replace(result, "${handler_service}", replacement[0]["${handler_service}"], -1)
-	result = strings.Replace(result, "${handle_error}", replacement[0]["${handle_error}"], -1)
+	if replacement["has_param"].(bool) {
+		result += cen_control_mould + aft_control_mould
+	} else {
+		result += aft_control_mould
+	}
+
+	result = strings.ReplaceAll(result, "${handler_name}", replacement["${handler_name}"].(string))
+	result = strings.ReplaceAll(result, "${handler_service}", replacement["${handler_service}"].(string))
+	result = strings.ReplaceAll(result, "${handle_error}", replacement["${handle_error}"].(string))
 
 	return result
 }
 
-func handleDefaultController(replacement map[string]string) {
+func handleDefaultController(replacement map[string]interface{}) {
 	if replacement["${handler_name}"] == "" {
 		replacement["${handler_name}"] = "DefaultController"
 	}
