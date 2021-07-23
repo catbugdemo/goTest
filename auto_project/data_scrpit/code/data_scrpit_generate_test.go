@@ -1,4 +1,4 @@
-package auto_generate
+package code
 
 import (
 	"fmt"

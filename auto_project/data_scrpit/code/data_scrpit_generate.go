@@ -1,4 +1,4 @@
-package auto_generate
+package code
 
 import (
 	"fmt"
@@ -9,6 +9,19 @@ import (
 	"os"
 	"path"
 	"strings"
+)
+
+var (
+	//数据库连接参数
+	Gamedb = map[string]interface{}{
+		"db":       "postgres",
+		"host":     "49.234.137.226",
+		"port":     "5432",
+		"user":     "zonst_xyx",
+		"dbname":   "game_test",
+		"sslmode":  "disable",
+		"password": "zonst_xyx_fengtao",
+	}
 )
 
 type HToP struct {
