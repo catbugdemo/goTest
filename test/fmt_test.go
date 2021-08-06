@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"testing"
 )
 
@@ -43,8 +44,7 @@ func TestMake(t *testing.T) {
 	})
 }
 
-
-// 格式化输出json ()
-func formatJSON()  {
-
+func TestPkgErrors(t *testing.T) {
+	err := errors.WithStack(errors.New("tet"))
+	fmt.Println(err)
 }

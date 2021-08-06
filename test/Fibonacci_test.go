@@ -2,7 +2,9 @@ package test
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	. "github.com/smartystreets/goconvey/convey"
+	"log"
 	"testing"
 	"time"
 )
@@ -33,5 +35,11 @@ func TestUnix(t *testing.T) {
 	t.Run("unix", func(t *testing.T) {
 		i := time.Now().Unix() % 30
 		fmt.Println(i)
+	})
+}
+
+func TestA(t *testing.T) {
+	t.Run("err", func(t *testing.T) {
+		log.Println(errors.Wrap(errors.New("错误"),"一个"))
 	})
 }

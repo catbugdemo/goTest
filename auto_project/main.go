@@ -1,1 +1,2 @@
-package auto_project
+package main
+

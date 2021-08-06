@@ -1,1 +1,0 @@
-package auto_generate_model

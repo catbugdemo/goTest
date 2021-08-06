@@ -13,14 +13,24 @@ import (
 
 var (
 	//数据库连接参数
-	Gamedb = map[string]interface{}{
+	Datadb = map[string]interface{}{
 		"db":       "postgres",
 		"host":     "49.234.137.226",
 		"port":     "5432",
-		"user":     "zonst_xyx",
-		"dbname":   "game_test",
+		"user":     "qipai",
+		"dbname":   "datadb",
 		"sslmode":  "disable",
-		"password": "zonst_xyx_fengtao",
+		"password": "qipai#xq5",
+	}
+
+	Pointdb = map[string]interface{}{
+		"db":       "postgres",
+		"host":     "123.206.176.76",
+		"port":     "5432",
+		"user":     "qipai",
+		"dbname":   "",
+		"sslmode":  "disable",
+		"password": "qipai#xq5",
 	}
 )
 
@@ -31,8 +41,12 @@ type HToP struct {
 	//	测试："hdfs://bigdata1:8020"
 	//	正式："hdfs://zonst-bigdata"
 	IsTest bool
-	// 表名
+	// 数据库表名
 	TableName string
+	// 数据库名称
+	DbName string
+	// 自定义表名
+	SelfTableName string
 }
 
 type PToH struct {
@@ -44,6 +58,10 @@ type PToH struct {
 	TableName string
 	// 拼接参数
 	FileName string
+	// 是否是测试服 ,不是则为正式服
+	//	测试："hdfs://bigdata1:8020"
+	//	正式："hdfs://zonst-bigdata"
+	IsTest bool
 }
 
 type Way interface {
@@ -200,16 +218,15 @@ ${columns}
 `
 	str = strings.ReplaceAll(str, "${index_and_type}", indexAndType(columns))
 	str = strings.ReplaceAll(str, "${test_path}", testPath(h.IsTest))
-	str = strings.ReplaceAll(str, "${path}", fmt.Sprintf("/user/hive/warehouse/%s.db/%s/dt=${dt}", h.DataSource["dbname"], h.TableName))
+	str = strings.ReplaceAll(str, "${path}", fmt.Sprintf("/user/hive/warehouse/%s.db/%s/dt=${dt}", h.DbName, h.SelfTableName))
 	str = strings.ReplaceAll(str, "${columns}", returnColumns(columns))
 	str = strings.ReplaceAll(str, "${username}", h.DataSource["user"].(string))
 	str = strings.ReplaceAll(str, "${password}", h.DataSource["password"].(string))
 	str = strings.ReplaceAll(str, "${db_path}",
-		fmt.Sprintf("%s:%s/%s",h.DataSource["host"],h.DataSource["port"],h.TableName))
-	str =strings.ReplaceAll(str,"${table_name}",h.TableName)
+		fmt.Sprintf("%s:%s/%s", h.DataSource["host"], h.DataSource["port"], h.TableName))
+	str = strings.ReplaceAll(str, "${table_name}", h.TableName)
 	return str, nil
 }
-
 
 func (h HToP) writeFile(buf []byte) error {
 	getwd, e := os.Getwd()
@@ -226,7 +243,6 @@ func (h HToP) writeFile(buf []byte) error {
 	}
 	return nil
 }
-
 
 func indexAndType(column []Column) string {
 	tmp := ""
@@ -254,7 +270,7 @@ func returnColumns(columns []Column) string {
 
 func returnType(columnType string) string {
 	switch columnType {
-	case "integer","serial":
+	case "integer", "serial":
 		return "int"
 	case "double precision", "money", "numeric", "real":
 		return "double"
@@ -303,6 +319,7 @@ func (p PToH) create() error {
 // ${table_name}表名
 // ${pg_column}
 // ${file_name}
+// ${is_test}
 func (p PToH) formatJSON() (string, error) {
 	columns, e := getDatabase(p.DataSource, p.TableName)
 	if e != nil {
@@ -341,7 +358,7 @@ ${query_sql}
 ${pg_column}
                         	],
                         "compress": "NONE",
-                        "defaultFS": "hdfs://zonst-bigdata",
+                        "defaultFS": "${is_test}",
                         "fieldDelimiter": "\u0001",
                         "fileName": "${day}_${flie_name}",
                         "fileType": "orc",
@@ -364,7 +381,7 @@ ${pg_column}
 	str = strings.ReplaceAll(str, "${table_name}", p.TableName)
 	str = strings.ReplaceAll(str, "${path}", fmt.Sprintf("/user/hive/warehouse/%s.db/%s/dt=${dt}", p.DataSource["dbname"], p.TableName))
 	str = strings.ReplaceAll(str, "${db_path}",
-		fmt.Sprintf("%s:%s/%s",p.DataSource["host"],p.DataSource["port"],p.TableName))
+		fmt.Sprintf("%s:%s/%s", p.DataSource["host"], p.DataSource["port"], p.TableName))
 	tmp := ""
 	if p.QuerySql {
 		tmp = returnQuerySql(columns)
@@ -372,6 +389,15 @@ ${pg_column}
 	str = strings.ReplaceAll(str, "${query_sql}", tmp)
 	str = strings.ReplaceAll(str, "${pg_column}", returnPGColumn(columns))
 	str = strings.ReplaceAll(str, "${flie_name}", p.FileName)
+
+	//	测试："hdfs://bigdata1:8020"
+	//	正式："hdfs://zonst-bigdata"
+	tmp = "hdfs://zonst-bigdata"
+	if p.IsTest {
+		tmp = "hdfs://bigdata1:8020"
+	}
+	str = strings.ReplaceAll(str,"${is_test}",tmp)
+
 	return str, nil
 }
 
@@ -410,14 +436,20 @@ func returnPGColumn(columns []Column) string {
 
 func returnPGType(column Column) string {
 	switch column.ColumnType {
-	case "integer", "smallint", "tinyint","serial":
+	case "integer", "smallint", "tinyint", "int", "smallserial":
 		return "int"
-	case "bigint":
+	case "bigint", "serial", "bigserial", "money":
 		return "bigint"
-	case "boolean":
+	case "decimal", "numeric", "real":
+		return "float"
+	case "bool":
 		return "boolean"
-	default:
+	case "character", "text", "json", "jsonb", "array":
 		return "string"
+	case "bytes":
+		return "bytea"
+	default:
+		return column.ColumnType
 	}
 }
 

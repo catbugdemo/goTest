@@ -1,40 +1,49 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"main.go/auto_project/data_scrpit/code"
-	"os"
 	"strconv"
+	"strings"
 )
 
-func main() {
-	// 数据存储函数
-	strs := make([]string, 0, 4)
+var params = flag.String("p", "", "string类型参数")
 
-	for i, arg := range os.Args {
-		if arg == "-help" {
-			fmt.Println("如果想生成 hdfs to pg 请输入2个参数如: ./main table_name isTest (table_name 是表名， isTest 是 是否是测试服 true or false）")
-			fmt.Println("如果想生成 pg to hdfs 请输入3个参数如:./main table_name query_sql file_name(table_name 是表名，query_sql是 是否要手写querySql true or false,file_name是文件名)")
-		}
-		if i > 2 {
-			log.Fatal("输入的参数最多只能为3个")
-			continue
-		}
-		strs[i] = arg
-	}
-	ParseStrs(strs)
+func main() {
+
+	flag.Parse()
+
+	s := *params
+
+	split := strings.Split(s, "/")
+
+	ParseStrs(split)
 }
 
 func ParseStrs(strs []string) {
-	if len(strs) == 2 {
-		parseBool, e := strconv.ParseBool(strs[1])
+	if len(strs) < 3 || len(strs) > 4 {
+		fmt.Println("如果想生成 hdfs to pg 请输入3个参数如: ./main -p 数据库名/表名/true(isTest 选择测试服还是正式服)")
+		fmt.Println("如果想生成 pg to hdfs 请输入4个参数如: ./main -p 数据库名/表名/true(querySql 选择是否自动生成)/filename(内部的一个参数数据)")
+	}
+
+	if len(strs) == 3 {
+		db := code.Pointdb
+		// 判断数据库db
+		if strs[0] == "datadb" {
+			db = code.Datadb
+		}else{
+			db["dbname"] = strs[0]
+		}
+
+		parseBool, e := strconv.ParseBool(strs[2])
 		if e != nil {
 			log.Fatal("isTest 输入错误：", e)
 		}
 		var way code.Way = code.HToP{
-			DataSource: code.Gamedb,
-			TableName:  strs[0],
+			DataSource: db,
+			TableName:  strs[1],
 			IsTest:     parseBool,
 		}
 		if e = code.DataScrpitGenerate(way); e != nil {
@@ -42,16 +51,24 @@ func ParseStrs(strs []string) {
 		}
 	}
 
-	if len(strs) == 3 {
-		parseBool, e := strconv.ParseBool(strs[1])
+	if len(strs) == 4 {
+		db := code.Pointdb
+		// 判断数据库db
+		if strs[0] == "datadb" {
+			db = code.Datadb
+		}else{
+			db["dbname"] = strs[0]
+		}
+
+		parseBool, e := strconv.ParseBool(strs[2])
 		if e != nil {
 			log.Fatal("query_sql 输入错误：", e)
 		}
 		var way code.Way = code.PToH{
-			DataSource: code.Gamedb,
-			TableName:  strs[0],
+			DataSource: db,
+			TableName:  strs[1],
 			QuerySql:   parseBool,
-			FileName:   strs[2],
+			FileName:   strs[3],
 		}
 		if e = code.DataScrpitGenerate(way); e != nil {
 			log.Fatal(e)
