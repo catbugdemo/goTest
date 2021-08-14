@@ -41,7 +41,7 @@ func square(inCh <-chan int) <-chan int {
 // 增加 merge() 入参是3个square各自写数据的通道，给这3个通道分别启动1个协程，把数据写入到自己创建的通道，并返回该通道，这是FAN-IN
 // merge() 是进行数据分发 FAN-IN
 func merge(cs ...<-chan int) <-chan int {
-	out := make(chan int,10)
+	out := make(chan int)
 
 	var wg sync.WaitGroup
 
@@ -61,14 +61,14 @@ func merge(cs ...<-chan int) <-chan int {
 	t.Stop()
 
 	// 错误方式：直接等待是bug,死锁，因为merge写out,main却没有读
-	// wg.Wait()
-	// close(out)
+	wg.Wait()
+	close(out)
 
 	// 正确方式
-	go func() {
+/*	go func() {
 		wg.Wait()
 		close(out)
-	}()
+	}()*/
 	return out
 }
 
