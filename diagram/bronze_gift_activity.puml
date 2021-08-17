@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:前端调用接口;
+:获取数据库中数据;
+note right
+根据
+game_id
+user_id
+获取
+end note
+if (是否领取,\n是否已弹窗,\n青铜套装是否过期) then (已领取,\n未弹窗,\n已过期)
+    :弹出青铜套装优惠窗口;
+    :换算倒计时时间戳;
+else (其他条件)
+endif
+:返回是否应该弹出,\n倒计时时间戳;
+note right
+ -1 表示不存在倒计时
+end note
+stop
+
+@enduml
