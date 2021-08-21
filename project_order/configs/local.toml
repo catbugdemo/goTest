@@ -1,0 +1,18 @@
+[database]
+    server = "49.234.137.226"
+    port = 5432
+    dbname = "game_test"
+    user = "zonst_xyx"
+    password = "zonst_xyx_fengtao"
+
+[redis]
+    server = "192.168.1.14:6379"
+    password = "echo123#qp"
+
+[rocketmq]
+    server = [
+    "118.89.121.211:9876"
+     ]
+    password =
+
+

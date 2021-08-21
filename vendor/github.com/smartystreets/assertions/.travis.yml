@@ -1,23 +1,11 @@
-dist: bionic
-
 language: go
 
 go:
   - 1.x
 
-env:
-  - GO111MODULE=on
+install:
+  - go get -t ./...
 
-script:
-  - make build
+script: go test ./... -v
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
-git:
-  depth: 1
-
-cache:
-  directories:
-    - $HOME/.cache/go-build
-    - $HOME/gopath/pkg/mod
+sudo: false
