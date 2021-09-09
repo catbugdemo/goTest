@@ -1,0 +1,18 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+start
+:客户端携带 token 给业务服务;
+:业务服务通过 接口发送给 中台;
+if (判断 token 是否合法) then (合法)
+    :继续进行业务操作;
+else (不合法)
+    if (是否过期)
+        :;
+    endif
+:返回错误;
+endif
+
+stop
+
+@enduml

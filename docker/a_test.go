@@ -1,8 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/tal-tech/go-zero/core/breaker"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -34,4 +37,16 @@ func TestA(t *testing.T) {
 	s := of.Field(2).Type.String()
 	sprintf := fmt.Sprintf("%s", s)
 	fmt.Println(sprintf)
+}
+
+func TestBreaker(t *testing.T) {
+	t.Run("测试", func(t *testing.T) {
+		b := breaker.NewBreaker()
+
+		for i := 0; i < 1000; i++ {
+			_ = b.Do(func() error {
+				return errors.New(strconv.Itoa(i))
+			})
+		}
+	})
 }

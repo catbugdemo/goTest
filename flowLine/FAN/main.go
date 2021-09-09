@@ -16,7 +16,7 @@ import (
 // FAN-IN  1个 goroutine 从多个通道读取数据，直到这些通道关闭
 
 func producer(nums ...int) <-chan int {
-	out := make(chan int, 10) // 不要使用无缓存通道,
+	out := make(chan int, len(nums)) // 不要使用无缓存通道,
 	// 开启线程通道进行
 	go func() {
 		defer close(out)
@@ -28,7 +28,7 @@ func producer(nums ...int) <-chan int {
 }
 
 func square(inCh <-chan int) <-chan int {
-	out := make(chan int, 10)
+	out := make(chan int, len(inCh))
 	go func() {
 		defer close(out)
 		for n := range inCh {

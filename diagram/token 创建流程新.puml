@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+autonumber
+actor 客户端 as web
+participant 业务服务 as back
+participant 中台 as cent
+
+web -> back ++: 客户端登录
+back -> cent++: 调用 token 服务\n获取 token
+back <- cent--: 获取token
+web <- back --: 返回token
+
+web -> back ++: 客户端调用token
+back -> cent++: 验证token是否合法
+back <- cent--: token 合法
+back -> back:   进行后续操作
+web <- back :   操作成功
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+note right
+熔断
+Google SRE过载保护算法
+工具 go-zero保护法
+end note
+
+stop
+
+@enduml

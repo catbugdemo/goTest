@@ -1,0 +1,25 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+actor 客户端 as web
+participant 后台 as back
+database 缓存 as redis
+participant 中台 as cent
+
+web -> back ++: 通过新 http 接口获取token
+back -> redis ++: 从一级，二级缓存中获取\n 中台信息组
+back <- redis : 获取成功
+back -> redis:延长中台组信息时间
+back <-- redis --++: 缓存获取失败
+back -> cent ++: 通过 中台\n http 接口获取 中台信息组
+back <- cent --: 获取中台信息组成功
+deactivate
+
+back -> cent ++: 通过获取的中台信息组\n 调用 http 接口获取token
+back <- cent : 返回相应的 token
+back -> cent : 通过中台接口设置过期时间
+deactivate
+web <- back --: 返回相应的 token
+
+@enduml

@@ -18,7 +18,7 @@ type Task struct {
 	//传入函数
 	Handler func(v ...interface{})
 	//需要传入的v
-	Params  []interface{}
+	Params []interface{}
 }
 
 // Pool 池
@@ -32,9 +32,9 @@ type Pool struct {
 	//任务通道
 	chTask chan *Task
 	//锁
-	mu     sync.Mutex
+	mu sync.Mutex
 	//用于等待一组线程的结束
-	wg     sync.WaitGroup
+	wg sync.WaitGroup
 }
 
 //创建

@@ -15,11 +15,16 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/btree v1.0.0 // indirect
 	github.com/jinzhu/gorm v1.9.16
+	github.com/json-iterator/go v1.1.11
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
+	github.com/tal-tech/go-zero v1.1.10
+	github.com/tidwall/gjson v1.9.0
 	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
 

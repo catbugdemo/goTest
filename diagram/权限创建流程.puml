@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:客户端携带token进行校验;
+:;
+
+endif
+stop
+
+@enduml
